@@ -1,0 +1,13 @@
+{
+  "name": "@tarriffix/ai",
+  "version": "1.0.0",
+  "main": "aiQuery.ts",
+  "types": "aiQuery.ts",
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24"
+  }
+} 
