@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 
 interface ProductData {
-  pageType: string;
-  title?: string;
-  manufacturer?: string;
-  countryOfOrigin?: string;
+  title: string;
+  manufacturer: string;
+  countryOfOrigin: string;
+  price: string;
+  currency: string;
   url: string;
-  error?: string;
+  website: string;
 }
 
 const Popup = () => {
@@ -23,9 +24,18 @@ const Popup = () => {
       try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         
-        // Improved Amazon URL detection
-        if (!tab?.url || !tab.url.match(/amazon\.(com|co\.uk|de|fr|it|es|co\.jp|in|ca|com\.mx|com\.br|com\.au|nl|pl|eg|sa|ae|se|sg|tr)/)) {
-          setError('Please navigate to an Amazon page')
+        // Check if URL is from a supported website
+        if (!tab?.url) {
+          setError('No active tab found')
+          setLoading(false)
+          return
+        }
+
+        const isAmazonUrl = tab.url.match(/amazon\.(com|co\.uk|de|fr|it|es|co\.jp|in|ca|com\.mx|com\.br|com\.au|nl|pl|eg|sa|ae|se|sg|tr)/);
+        const isWalmartUrl = tab.url.match(/walmart\.com/);
+
+        if (!isAmazonUrl && !isWalmartUrl) {
+          setError('Please navigate to an Amazon or Walmart page')
           setLoading(false)
           return
         }
@@ -36,9 +46,10 @@ const Popup = () => {
         
         if (response?.error) {
           setError(response.error)
-          setProductData(response)
+        } else if (!response?.data) {
+          setError('No data received from the page')
         } else {
-          setProductData(response)
+          setProductData(response.data)
         }
       } catch (err) {
         console.error('Error in popup:', err);
@@ -54,17 +65,6 @@ const Popup = () => {
   const renderProductDetails = () => {
     if (!productData) return null
 
-    if (productData.error) {
-      return (
-        <div className="non-product-page">
-          <p className="error-message">{productData.error}</p>
-          <p className="current-url">
-            Current URL: <a href={productData.url} target="_blank" rel="noopener noreferrer">{productData.url}</a>
-          </p>
-        </div>
-      )
-    }
-
     return (
       <div className="product-details">
         <h3 className="product-title">{productData.title}</h3>
@@ -72,16 +72,24 @@ const Popup = () => {
         <div className="product-info">
           <div className="info-row">
             <span className="info-label">Manufacturer:</span>
-            <span className="info-value">{productData.manufacturer}</span>
+            <span className="info-value">{productData.manufacturer || 'Not found'}</span>
           </div>
           <div className="info-row">
             <span className="info-label">Country of Origin:</span>
-            <span className="info-value">{productData.countryOfOrigin}</span>
+            <span className="info-value">{productData.countryOfOrigin || 'Not found'}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Price:</span>
+            <span className="info-value">{productData.price ? `${productData.currency}${productData.price}` : 'Not found'}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Website:</span>
+            <span className="info-value">{productData.website}</span>
           </div>
         </div>
         
         <div className="product-url">
-          <a href={productData.url} target="_blank" rel="noopener noreferrer">View on Amazon</a>
+          <a href={productData.url} target="_blank" rel="noopener noreferrer">View on {productData.website}</a>
         </div>
       </div>
     )
@@ -99,7 +107,7 @@ const Popup = () => {
         paddingBottom: '10px',
         marginBottom: '16px'
       }}>
-        Amazon Product Info
+        Product Info
       </h2>
       
       {loading ? (
@@ -127,7 +135,7 @@ const Popup = () => {
           padding: '20px',
           color: '#666'
         }}>
-          <p>No data found. Please navigate to an Amazon page.</p>
+          <p>No data found. Please navigate to a supported product page.</p>
         </div>
       )}
 
@@ -141,6 +149,7 @@ const Popup = () => {
           margin: 0;
           color: #0F1111;
           font-size: 18px;
+          line-height: 1.4;
         }
         .product-info {
           display: flex;
@@ -153,14 +162,19 @@ const Popup = () => {
         .info-row {
           display: flex;
           justify-content: space-between;
-          align-items: center;
+          align-items: flex-start;
+          gap: 16px;
         }
         .info-label {
           font-weight: bold;
           color: #555;
+          flex-shrink: 0;
+          min-width: 120px;
         }
         .info-value {
           color: #0F1111;
+          text-align: right;
+          word-break: break-word;
         }
         .product-url {
           text-align: center;
@@ -169,26 +183,15 @@ const Popup = () => {
         .product-url a {
           color: #007185;
           text-decoration: none;
+          padding: 8px 16px;
+          border: 1px solid #007185;
+          border-radius: 4px;
+          transition: all 0.2s;
         }
         .product-url a:hover {
-          color: #C7511F;
-          text-decoration: underline;
-        }
-        .error-message {
-          margin: 0 0 12px 0;
-          color: #d32f2f;
-        }
-        .current-url {
-          margin: 0;
-          word-break: break-all;
-        }
-        .current-url a {
-          color: #007185;
+          color: #fff;
+          background-color: #007185;
           text-decoration: none;
-        }
-        .current-url a:hover {
-          color: #C7511F;
-          text-decoration: underline;
         }
       `}</style>
     </div>
