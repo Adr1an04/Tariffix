@@ -287,6 +287,58 @@ import { ProductData } from './types';
     }
   }
 
+  // Page state management
+  class PageStateManager {
+    private scrollPosition: { x: number; y: number } = { x: 0, y: 0 };
+    private clickedElements: WeakMap<HTMLElement, boolean> = new WeakMap();
+
+    saveState() {
+      this.scrollPosition = {
+        x: window.scrollX,
+        y: window.scrollY
+      };
+      console.log('Saved scroll position:', this.scrollPosition);
+    }
+
+    restoreState() {
+      // Restore scroll position
+      window.scrollTo(this.scrollPosition.x, this.scrollPosition.y);
+      console.log('Restored scroll position:', this.scrollPosition);
+
+      // Close any modals or popups
+      const modalSelectors = [
+        '[data-testid="modal"]',
+        '.modal',
+        '.popup',
+        '[role="dialog"]',
+        '[aria-modal="true"]'
+      ];
+
+      modalSelectors.forEach(selector => {
+        const modals = document.querySelectorAll(selector);
+        modals.forEach(modal => {
+          const closeButton = modal.querySelector(
+            'button[aria-label="close"], .close-button, .modal-close, [data-testid="modal-close-button"]'
+          ) as HTMLElement;
+          
+          if (closeButton) {
+            console.log('Closing modal via close button');
+            closeButton.click();
+          } else if (modal instanceof HTMLElement) {
+            console.log('Removing modal element');
+            modal.style.display = 'none';
+          }
+        });
+      });
+    }
+
+    trackClick(element: HTMLElement) {
+      this.clickedElements.set(element, true);
+    }
+  }
+
+  const pageStateManager = new PageStateManager();
+
   class WalmartProductScraperV2 implements ProductScraper {
     async waitForElement(selector: string, timeout: number = 5000): Promise<Element | null> {
       console.log(`Waiting for element: ${selector}`);
@@ -399,6 +451,9 @@ import { ProductData } from './types';
     async findManufacturer(): Promise<string> {
       console.log("Looking for Walmart manufacturer/brand");
       
+      // Save state before interactions
+      pageStateManager.saveState();
+      
       // Check for brand in the most common places first
       const quickSelectors = [
         '[data-testid="brand-name"]',
@@ -423,7 +478,10 @@ import { ProductData } from './types';
 
       if (moreDetailsButton) {
         console.log("Found More details button, clicking...");
-        moreDetailsButton.click();
+        if (moreDetailsButton instanceof HTMLElement) {
+          pageStateManager.trackClick(moreDetailsButton);
+          moreDetailsButton.click();
+        }
         
         // Short wait for modal
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -434,6 +492,8 @@ import { ProductData } from './types';
         
         if (modalBrand) {
           console.log("Found brand in modal:", modalBrand);
+          // Restore state before returning
+          pageStateManager.restoreState();
           return modalBrand;
         }
 
@@ -446,14 +506,15 @@ import { ProductData } from './types';
             if (matches?.[1]) {
               const brand = matches[1].trim();
               console.log("Found brand in modal:", brand);
+              // Restore state before returning
+              pageStateManager.restoreState();
               return brand;
             }
           }
         }
 
-        // Try to close modal
-        const closeButton = document.querySelector('[data-testid="modal-close-button"], button[aria-label="close"]') as HTMLElement;
-        if (closeButton) closeButton.click();
+        // Restore state if no brand found
+        pageStateManager.restoreState();
       }
 
       // Use first word of title as last resort
@@ -525,36 +586,44 @@ import { ProductData } from './types';
     async scrapeProduct(): Promise<ProductData> {
       console.log("Starting Walmart product scrape");
       
-      const pageType = this.getPageType();
-      console.log("Page type:", pageType);
+      // Save initial page state
+      pageStateManager.saveState();
       
-      if (pageType !== "product") {
-        throw new Error("Not a product page");
+      try {
+        const pageType = this.getPageType();
+        console.log("Page type:", pageType);
+        
+        if (pageType !== "product") {
+          throw new Error("Not a product page");
+        }
+
+        // Quick bot detection check
+        await this.waitForBotDetection(10);
+
+        // Scrape all data in parallel
+        const [title, manufacturer, { price, currency }, countryOfOrigin] = await Promise.all([
+          this.findTitle(),
+          this.findManufacturer(),
+          this.findPrice(),
+          this.findCountryOfOrigin()
+        ]);
+
+        const productData: ProductData = {
+          title,
+          manufacturer,
+          countryOfOrigin,
+          price,
+          currency,
+          url: window.location.href,
+          website: "Walmart"
+        };
+
+        console.log("Scraped Walmart product data:", productData);
+        return productData;
+      } finally {
+        // Always restore page state, even if scraping fails
+        pageStateManager.restoreState();
       }
-
-      // Quick bot detection check
-      await this.waitForBotDetection(10);
-
-      // Scrape all data in parallel
-      const [title, manufacturer, { price, currency }, countryOfOrigin] = await Promise.all([
-        this.findTitle(),
-        this.findManufacturer(),
-        this.findPrice(),
-        this.findCountryOfOrigin()
-      ]);
-
-      const productData: ProductData = {
-        title,
-        manufacturer,
-        countryOfOrigin,
-        price,
-        currency,
-        url: window.location.href,
-        website: "Walmart"
-      };
-
-      console.log("Scraped Walmart product data:", productData);
-      return productData;
     }
   }
 
