@@ -16,7 +16,7 @@
   "packageManager": "pnpm@10.7.0",
   "dependencies": {
     "@types/chrome": "^0.0.315",
-    "cheerio": "^1.0.0"
+    "cheerio": "^1.0.0",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
     "mongodb": "^6.15.0",
