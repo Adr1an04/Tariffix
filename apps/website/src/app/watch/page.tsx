@@ -6,6 +6,7 @@ export default function Watch() {
     <div className="flex flex-col min-h-screen">
       <Navbar>
         
+        
       </Navbar>
     </div>
 
