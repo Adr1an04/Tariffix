@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 
 const rateSchema = new mongoose.Schema({
-  name: {
+  htsno: {
     type: String,
     required: true,
   },
@@ -9,13 +9,14 @@ const rateSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  price: {
-    type: Number,
+  general: {
+    type: String,
     required: true,
   },
-  features: [{
+  other: {
     type: String,
-  }],
+    required: true,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
