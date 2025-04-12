@@ -4,14 +4,9 @@ import { createRoot } from 'react-dom/client'
 interface ProductData {
   pageType: string;
   title?: string;
-  price?: string;
-  rating?: string;
-  reviewCount?: string;
-  availability?: string;
-  seller?: string;
-  mainImage?: string;
+  manufacturer?: string;
+  countryOfOrigin?: string;
   url: string;
-  details?: Record<string, string>;
   error?: string;
 }
 
@@ -21,29 +16,36 @@ const Popup = () => {
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    const fetchProductData = () => {
+    const fetchProductData = async () => {
       setLoading(true)
       setError(null)
       
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        if (!tabs[0]?.url?.includes('amazon.com')) {
+      try {
+        const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+        
+        // Improved Amazon URL detection
+        if (!tab?.url || !tab.url.match(/amazon\.(com|co\.uk|de|fr|it|es|co\.jp|in|ca|com\.mx|com\.br|com\.au|nl|pl|eg|sa|ae|se|sg|tr)/)) {
           setError('Please navigate to an Amazon page')
           setLoading(false)
           return
         }
+
+        // Send message through the background script
+        const response = await chrome.runtime.sendMessage({ action: 'getProductData' });
+        console.log('Popup received response:', response);
         
-        chrome.runtime.sendMessage({ action: 'getProductData' }, (response) => {
-          if (chrome.runtime.lastError) {
-            setError(`Error: ${chrome.runtime.lastError.message}`)
-          } else if (response?.error) {
-            setError(response.error)
-            setProductData(response)
-          } else {
-            setProductData(response)
-          }
-          setLoading(false)
-        })
-      })
+        if (response?.error) {
+          setError(response.error)
+          setProductData(response)
+        } else {
+          setProductData(response)
+        }
+      } catch (err) {
+        console.error('Error in popup:', err);
+        setError(`Error: ${err.message}`)
+      } finally {
+        setLoading(false)
+      }
     }
 
     fetchProductData()
@@ -65,34 +67,17 @@ const Popup = () => {
 
     return (
       <div className="product-details">
-        {productData.mainImage && (
-          <div className="product-image">
-            <img src={productData.mainImage} alt={productData.title} style={{ maxWidth: '100%', height: 'auto' }} />
-          </div>
-        )}
-        
         <h3 className="product-title">{productData.title}</h3>
         
         <div className="product-info">
-          {productData.price && <p><strong>Price:</strong> {productData.price}</p>}
-          {productData.rating && <p><strong>Rating:</strong> {productData.rating} {productData.reviewCount && `(${productData.reviewCount})`}</p>}
-          {productData.availability && <p><strong>Availability:</strong> {productData.availability}</p>}
-          {productData.seller && <p><strong>Seller:</strong> {productData.seller}</p>}
-        </div>
-        
-        <div className="product-specs">
-          <h4>Product Details:</h4>
-          {productData.details && Object.keys(productData.details).length > 0 ? (
-            <ul>
-              {Object.entries(productData.details).map(([key, value]) => (
-                <li key={key}>
-                  <strong>{key}:</strong> {value}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>No detailed specifications found.</p>
-          )}
+          <div className="info-row">
+            <span className="info-label">Manufacturer:</span>
+            <span className="info-value">{productData.manufacturer}</span>
+          </div>
+          <div className="info-row">
+            <span className="info-label">Country of Origin:</span>
+            <span className="info-value">{productData.countryOfOrigin}</span>
+          </div>
         </div>
         
         <div className="product-url">
@@ -114,7 +99,7 @@ const Popup = () => {
         paddingBottom: '10px',
         marginBottom: '16px'
       }}>
-        Amazon Product Scraper
+        Amazon Product Info
       </h2>
       
       {loading ? (
@@ -152,10 +137,6 @@ const Popup = () => {
           flex-direction: column;
           gap: 16px;
         }
-        .product-image {
-          text-align: center;
-          margin-bottom: 16px;
-        }
         .product-title {
           margin: 0;
           color: #0F1111;
@@ -164,22 +145,22 @@ const Popup = () => {
         .product-info {
           display: flex;
           flex-direction: column;
-          gap: 8px;
+          gap: 12px;
+          background-color: #f8f8f8;
+          padding: 16px;
+          border-radius: 8px;
         }
-        .product-specs {
-          border-top: 1px solid #eee;
-          padding-top: 16px;
-        }
-        .product-specs h4 {
-          margin: 0 0 12px 0;
-        }
-        .product-specs ul {
-          list-style: none;
-          padding: 0;
-          margin: 0;
+        .info-row {
           display: flex;
-          flex-direction: column;
-          gap: 8px;
+          justify-content: space-between;
+          align-items: center;
+        }
+        .info-label {
+          font-weight: bold;
+          color: #555;
+        }
+        .info-value {
+          color: #0F1111;
         }
         .product-url {
           text-align: center;

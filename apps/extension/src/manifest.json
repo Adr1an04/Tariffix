@@ -3,19 +3,20 @@
   "name": "Amazon Product Scraper",
   "version": "1.0",
   "description": "Scrapes product details from Amazon pages",
-  "permissions": ["activeTab", "scripting"],
+  "permissions": ["activeTab", "scripting", "tabs"],
   "host_permissions": ["*://*.amazon.com/*"],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
       "matches": ["*://*.amazon.com/*"],
       "js": ["content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_start"
     }
   ],
   "action": {
-    "default_popup": "popup.html" 
+    "default_popup": "index.html"
   }
 }
