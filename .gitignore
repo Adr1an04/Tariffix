@@ -1,0 +1,8 @@
+# Root .gitignore
+node_modules/
+.DS_Store
+.env
+dist/
+.temp/
+.idea/
+*.log
