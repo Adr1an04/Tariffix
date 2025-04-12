@@ -1,9 +1,14 @@
 {
-  "name": "TarrifFix",
+  "name": "tarriffix",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev:website": "cd apps/website && npm run dev",
+    "dev:extension": "cd apps/extension && npm run dev",
+    "build:website": "cd apps/website && npm run build",
+    "build:extension": "cd apps/extension && npm run build"
+  }
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
