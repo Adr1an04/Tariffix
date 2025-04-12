@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
             <Link
               key={index}
               href={route.href}
-              className={route.title === "DOWNLOAD" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
+              className={route.title === "DOWNLOAD" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5d:text-sm sm:text-xs text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
             >
               {route.title}
             </Link>
