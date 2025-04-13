@@ -1,11 +1,15 @@
 {
-  "name": "TarrifFix",
+  "name": "tarriffix",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev:website": "cd apps/website && npm run dev",
+    "dev:extension": "cd apps/extension && npm run dev",
+    "build:website": "cd apps/website && npm run build",
+    "build:extension": "cd apps/extension && npm run build"
   },
+  "test": "echo \"Error: no test specified\" && exit 1",
   "keywords": [],
   "author": "",
   "license": "ISC",
@@ -16,5 +20,11 @@
     "heroicons": "^2.2.0",
     "lucide-react": "^0.487.0",
     "swr": "^2.3.3"
+    "@types/chrome": "^0.0.315",
+    "cheerio": "^1.0.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "mongodb": "^6.15.0",
+    "mongoose": "^8.13.2"
   }
 }
