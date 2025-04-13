@@ -19,7 +19,7 @@
     "@radix-ui/themes": "^3.2.1",
     "heroicons": "^2.2.0",
     "lucide-react": "^0.487.0",
-    "swr": "^2.3.3"
+    "swr": "^2.3.3",
     "@types/chrome": "^0.0.315",
     "cheerio": "^1.0.0",
     "dotenv": "^16.5.0",
