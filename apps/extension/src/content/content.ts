@@ -311,14 +311,20 @@ import { ProductData } from './types';
         '.modal',
         '.popup',
         '[role="dialog"]',
-        '[aria-modal="true"]'
+        '[aria-modal="true"]',
+        // Add Walmart-specific selectors
+        '[data-modal-root]',
+        '.modal-overlay',
+        '.overlay',
+        '[data-automation-id="overlay"]'
       ];
 
       modalSelectors.forEach(selector => {
         const modals = document.querySelectorAll(selector);
         modals.forEach(modal => {
+          // Try to find and click close button first
           const closeButton = modal.querySelector(
-            'button[aria-label="close"], .close-button, .modal-close, [data-testid="modal-close-button"]'
+            'button[aria-label="close"], .close-button, .modal-close, [data-testid="modal-close-button"], button[aria-label="Close"], [data-automation-id="close-button"]'
           ) as HTMLElement;
           
           if (closeButton) {
@@ -327,6 +333,33 @@ import { ProductData } from './types';
           } else if (modal instanceof HTMLElement) {
             console.log('Removing modal element');
             modal.style.display = 'none';
+            // Also try removing modal-specific classes
+            modal.classList.remove('active', 'show', 'visible', 'open');
+            // Set aria-hidden attribute
+            modal.setAttribute('aria-hidden', 'true');
+          }
+        });
+      });
+
+      // Clean up any remaining overlay styles on body
+      document.body.style.overflow = '';
+      document.body.style.position = '';
+      document.body.style.paddingRight = '';
+      
+      // Remove any overlay backdrop elements
+      const backdropSelectors = [
+        '.modal-backdrop',
+        '.overlay-backdrop',
+        '[data-testid="modal-backdrop"]',
+        '.backdrop'
+      ];
+      
+      backdropSelectors.forEach(selector => {
+        const backdrops = document.querySelectorAll(selector);
+        backdrops.forEach(backdrop => {
+          if (backdrop instanceof HTMLElement) {
+            backdrop.style.display = 'none';
+            backdrop.remove();
           }
         });
       });
