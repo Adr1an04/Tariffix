@@ -1,8 +1,14 @@
 {
   "manifest_version": 3,
-  "name": "Shopping Product Scraper",
+  "name": "Tariffix",
   "version": "1.0",
-  "description": "Scrapes product details from various shopping websites",
+  "description": "Tariffs made simple - track, compare, and calculate in seconds. ",
+  "icons": {
+    "16": "tariffixicon.png",
+    "32": "tariffixicon.png",
+    "48": "tariffixicon.png",
+    "128": "tariffixicon.png"
+  },
   "permissions": [
     "activeTab",
     "scripting",
@@ -53,6 +59,12 @@
     }
   ],
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "index.html",
+    "default_icon": {
+      "16": "tariffixicon.png",
+      "32": "tariffixicon.png",
+      "48": "tariffixicon.png",
+      "128": "tariffixicon.png"
+    }
   }
 }

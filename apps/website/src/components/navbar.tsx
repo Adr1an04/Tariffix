@@ -6,9 +6,9 @@ import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/solid";
 import { Button } from "@/components/ui/button";
 
 const routes: { title: string; href: string }[] = [
-  { title: "GUIDE", href: "/guide" },
-  { title: "WATCH", href: "/watch" },
-  { title: "DOWNLOAD", href: "/download"}
+  { title: "Guide", href: "/guide" },
+  { title: "Watch", href: "/watch" },
+  { title: "Download", href: "/download"}
 ];
 
 const Navbar: React.FC = () => {
@@ -64,7 +64,7 @@ const MobileMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
             key={index}
             href={route.href}
             onClick={toggleMenu}
-            className={route.title === "DOWNLOAD" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-sm transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
+            className={route.title === "Download" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-sm transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
             
             
           >

@@ -1,16 +1,25 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 const rateSchema = new mongoose.Schema({
+  _id: {
+    type: Types.ObjectId,
+  },
+
   htsno: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
-    required: true,
   },
   general: {
     type: String,
+  },
+  special: [{
+    type: String,
+  }],
+  other: [{
+    type: String,
+  }],
     required: true,
   },
   other: {
@@ -21,6 +30,7 @@ const rateSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
 });
 
 export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema); 

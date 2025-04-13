@@ -36,7 +36,6 @@ const carouselFeatureList = [
         title: "LEARNING LANGUAGE MODEL",
         desc: "A sophisticated NLP model built using Google’s Gemini framework, optimized for understanding and generating human-like text across diverse domains. Leveraging deep learning techniques and large-scale datasets, it continuously adapts to context, enabling advanced conversational capabilities, data extraction, and language comprehension tasks.",
         subtitle: "GOOGLE AI STUDIO (GEMINI)",
-
         color: "bg-[#8D6B94]",
 
 
