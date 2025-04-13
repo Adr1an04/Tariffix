@@ -14,23 +14,14 @@ const rateSchema = new mongoose.Schema({
   general: {
     type: String,
   },
-  special: [{
+  special: {
     type: String,
-  }],
+  },
   other: [{
     type: String,
   }],
-    required: true,
-  },
-  other: {
-    type: String,
-    required: true,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  }
 
-});
+);
 
 export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema); 

@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
+import { connectToDatabase } from '../../../../lib/mongodb';
 
 const uri = process.env.MONGODB_URI!;
 const client = new MongoClient(uri);
+
 const dbName = "tariff"; 
 
 export async function GET(request: Request) {

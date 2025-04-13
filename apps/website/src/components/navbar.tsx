@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const routes: { title: string; href: string }[] = [
   { title: "Guide", href: "/guide" },
   { title: "Watch", href: "/watch" },
-  { title: "Download", href: "/download"}
+  { title: "DOWNLOAD", href: "/download"}
 ];
 
 const Navbar: React.FC = () => {
@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
             <Link
               key={index}
               href={route.href}
-              className={route.title === "DOWNLOAD" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5d:text-sm sm:text-xs text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit rounded-lg hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
+              className={route.title === "DOWNLOAD" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 text-sm text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit rounded-lg hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
             >
               {route.title}
             </Link>
@@ -64,7 +64,7 @@ const MobileMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
             key={index}
             href={route.href}
             onClick={toggleMenu}
-            className={route.title === "Download" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-sm transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
+            className={route.title === "DOWNLOAD" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-2xl transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
             
             
           >

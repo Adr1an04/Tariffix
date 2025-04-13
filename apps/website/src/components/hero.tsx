@@ -47,9 +47,9 @@ export function Hero() {
 
     return (
         <div className="flex flex-col">
-            <div className="relative overflow-hidden bg-cover bg-center h-[80vh] bg-gradient-to-b from-white to-lime-100 flex items-center justify-center">
+            <div className="relative overflow-hidden bg-cover bg-center h-[100vh] bg-gradient-to-b from-white to-lime-100 flex items-center justify-center">
                 <div className="flex flex-col items-center justify-center">
-                    <div className="relative w-full max-w-md">
+                    <div className="relative w-full max-w-md -mt-30">
                         <Image
                             src={logo}
                             alt="Tariffix Logo"
@@ -104,7 +104,7 @@ export function Hero() {
 
 
             <div className="bg-lime-100 py-16">
-                <div className="max-w-6xl mx-auto px-4">
+                <div className="max-w-6xl mx-auto px-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
                         <div className="text-black">
                             <h2 className="text-3xl font-bold mb-4 ">Guide</h2>
@@ -112,15 +112,27 @@ export function Hero() {
                             This page <b>explains what tariffs are, how they work, and why they matter in global trade.</b> You'll learn about the different types of tariffs, their impact on prices and international relationships, and why understanding them is important for importers, businesses, and consumers.
                             </p>
                         </div>
-                        <div className="bg-lime-500 h-64 rounded-lg"></div>
+                        <Image
+                            src="/guidehero.png"
+                            alt="PNG"
+                            width={500}
+                            height={300}
+                            className="w-full h-auto rounded-xl"
+                        />
                     </div>
                 </div>
             </div>
 
             <div className="bg-white py-16">
-                <div className="max-w-6xl mx-auto px-4">
+                <div className="max-w-6xl mx-auto px-10">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-                        <div className="bg-[#8D6B94] h-64 rounded-lg"></div>
+                        <Image
+                            src="/watchhero.png"
+                            alt="PNG"
+                            width={500}
+                            height={300}
+                            className="w-full h-auto rounded-xl"
+                        />
                         <div className="text-black">
                             <h2 className="text-3xl font-bold mb-4">Watch</h2>
                             <p className="text-lg text-gray-700">
