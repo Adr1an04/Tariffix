@@ -14,6 +14,11 @@ export default function Home() {
     other: string;
   }
 
+  // 1:
+  // we're going fetch each rate's htsno number and add to the display
+  // we're going to display every country in the component
+  // once hit submit, will display the country's spec tariff
+
   // current data being displayed
   const [rates, setRates] = useState<Rate[]>([]);
   const [htsCode, setHtsCode] = useState<string>("");

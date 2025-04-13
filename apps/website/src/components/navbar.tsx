@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const routes: { title: string; href: string }[] = [
   { title: "Guide", href: "/guide" },
   { title: "Watch", href: "/watch" },
-  { title: "Download", href: "/download"}
+  { title: "DOWNLOAD", href: "/download"}
 ];
 
 const Navbar: React.FC = () => {
@@ -22,8 +22,8 @@ const Navbar: React.FC = () => {
     <div className="relative flex items-center justify-between h-32 w-full bg-gradient-to-t from-transparent lg:pr-14 md:pr-10 sm:pr-2 lg:pl-8 py-5">
       <div className="flex w-full justify-between m-6">
         <div className="flex justify-start items-center space-x-4">
-          <Link href={"/"} className="shrink-0">
-            <Image className="object-contain" src="/tarrifixblacklogo.svg" alt="My Icon" width={150} height={150} />
+          <Link href={"/"} className="shrink-0 text-black font-extrabold flex-row flex align-middle justify-center items-center gap-x-5 text-2xl">
+            <Image className="object-contain flex-row " src="/logo.jpg" alt="My Icon" width={40} height={40} />Tariffix
           </Link>
         </div>
 
@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
             <Link
               key={index}
               href={route.href}
-              className={route.title === "Download" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
+              className={route.title === "DOWNLOAD" ? "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 text-sm text-white bg-[#8D6B94] h-fit py-2 my-18 w-fit rounded-lg hover:bg-[#d096dc]" : "font-bold transition items-center inline-flex lg:px-5 md:px-3 sm:px-1.5 lg:text-base md:text-sm sm:text-xs hover:text-[#8D6B94] text-black"}
             >
               {route.title}
             </Link>
@@ -64,7 +64,7 @@ const MobileMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
             key={index}
             href={route.href}
             onClick={toggleMenu}
-            className={route.title === "Download" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-sm transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
+            className={route.title === "DOWNLOAD" ? "hover:bg-[#d096dc] font-bold text-white justify-center inline-flex align-middle text-center h-10 w-full items-center text-2xl transition-colors bg-[#8D6B94] p-5" : "hover:text-[#679436] font-bold text-white inline-flex h-10 w-full items-center text-sm transition-colors"}
             
             
           >
