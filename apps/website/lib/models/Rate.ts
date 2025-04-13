@@ -1,25 +1,24 @@
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 const rateSchema = new mongoose.Schema({
-  name: {
+  _id: {
+    type: Types.ObjectId,
+  },
+  htsno: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
-    required: true,
   },
-  price: {
-    type: Number,
-    required: true,
+  general: {
+    type: String,
   },
-  features: [{
+  special: [{
     type: String,
   }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
+  other: [{
+    type: String,
+  }],
 });
 
 export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema); 
