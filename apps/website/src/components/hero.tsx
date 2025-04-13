@@ -15,7 +15,7 @@ const carouselItems = [
         color: "bg-[#6B8E23]",
     },
     {
-        title: "Hawk Tuah.",
+        title: "Educate yourself and others.",
         color: "bg-[#8D6B94]",
     }
 ];
@@ -55,10 +55,10 @@ export function Hero() {
                         Tariffs made simple — track, compare, and calculate in seconds.
                     </p>
                     <div className="mt-8 flex space-x-8">
-                        <button className="px-6 py-3 bg-[#8D6B94] text-white font-semibold rounded-md hover:bg-[#d096dc] transition-colors">
+                        <button className="px-6 py-3 bg-[#8D6B94] text-white font-semibold hover:bg-[#d096dc] transition-colors">
                             Download
                         </button>
-                        <button className="px-6 py-3 bg-lime-500 text-white font-semibold rounded-md hover:bg-lime-600 transition-colors">
+                        <button className="px-6 py-3 bg-lime-500 text-white font-semibold hover:bg-lime-600 transition-colors">
                             Learn More
                         </button>
                     </div>
