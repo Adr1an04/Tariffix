@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { MongoClient } from "mongodb";
+import { connectToDatabase } from '/Users/kaisprunger/tarrifix/TarrifFix/lib/mongodb.js';
 
 const uri = process.env.MONGODB_URI!;
 const client = new MongoClient(uri);
@@ -7,6 +8,10 @@ const dbName = "tariff";
 
 export async function GET(request: Request) {
   try {
+
+    await connectToDatabase();
+    
+
     const { searchParams } = new URL(request.url);
     const htsno = searchParams.get("htsno");
 

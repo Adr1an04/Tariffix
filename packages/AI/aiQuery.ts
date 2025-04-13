@@ -2,13 +2,14 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
 // Load environment variables from the website's .env.local
-dotenv.config({ path: '../../apps/website/.env.local' });
+dotenv.config({ path: '/Users/kaisprunger/tarrifix/TarrifFix/apps/website/.env' });
+const gemini = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
-if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-  throw new Error('NEXT_PUBLIC_GEMINI_API_KEY is not defined in environment variables');
+if (!gemini) {
+  throw new Error('NEXT_GEMINI_API_KEY is not defined in environment variables');
 }
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(gemini);
 
 export async function queryAI(prompt: string): Promise<string> {
   try {
