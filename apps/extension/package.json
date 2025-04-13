@@ -4,7 +4,10 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build:content": "vite build -c vite.content.config.ts",
+    "build:background": "vite build -c vite.background.config.ts",
+    "build:popup": "vite build -c vite.popup.config.ts",
+    "build": "pnpm run clean && pnpm run build:content && pnpm run build:background && pnpm run build:popup",
     "dev": "vite build --watch --mode development",
     "preview": "vite preview",
     "clean": "rimraf dist",

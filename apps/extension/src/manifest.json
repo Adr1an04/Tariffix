@@ -8,7 +8,11 @@
     "scripting",
     "tabs",
     "storage",
-    "webNavigation"
+    "webNavigation",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+    "alarms",
+    "proxy"
   ],
   "host_permissions": [
     "*://*.amazon.com/*",
@@ -24,7 +28,8 @@
     "*://www.walmart.com/*"
   ],
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -46,9 +51,16 @@
       "all_frames": false
     }
   ],
+  "declarative_net_request": {
+    "rule_resources": [{
+      "id": "ruleset_1",
+      "enabled": true,
+      "path": "rules/rules.json"
+    }]
+  },
   "web_accessible_resources": [
     {
-      "resources": ["content.js"],
+      "resources": ["content.js", "rules/*"],
       "matches": ["<all_urls>"]
     }
   ],
