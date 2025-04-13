@@ -15,6 +15,8 @@
     "@radix-ui/react-slot": "^1.2.0",
     "@tarriffix/ai": "workspace:*",
     "class-variance-authority": "^0.7.1",
+
+    "embla-carousel-react": "^8.6.0",
     "cmdk": "^1.1.1",
     "lucide-react": "^0.487.0",
     "mongoose": "^8.2.0",
