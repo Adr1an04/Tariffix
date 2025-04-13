@@ -9,5 +9,12 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "packageManager": "pnpm@10.7.0"
+  "packageManager": "pnpm@10.7.0",
+  "dependencies": {
+    "@heroicons/react": "^2.2.0",
+    "@radix-ui/themes": "^3.2.1",
+    "heroicons": "^2.2.0",
+    "lucide-react": "^0.487.0",
+    "swr": "^2.3.3"
+  }
 }
