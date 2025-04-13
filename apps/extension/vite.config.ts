@@ -22,6 +22,10 @@ export default defineConfig({
           src: 'src/popup/index.html',
           dest: '.',
           rename: 'index.html'
+        },
+        {
+          src: 'src/assets/tariffixicon.png',
+          dest: '.'
         }
       ]
     })
