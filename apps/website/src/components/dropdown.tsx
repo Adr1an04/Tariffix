@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Input } from "@/components/ui/input";
 import Image from "next/image";
+import { aiDropdownQuery } from "@tarriffix/ai/aiDropDownQuery";
 
 export function Dropdown() {
     const [input, setInput] = useState<string>(""); 
@@ -9,6 +10,11 @@ export function Dropdown() {
     const [LLMOutput, setLLMOutput] = useState<string>("");
     
     const [jsonOutput, setJsonOutput] = useState<string>("");
+
+    const [htsCode, setHtsCode] = useState<string>("");
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+
 
     const update = async (reg: boolean, input: string): Promise<void> => { 
         if (!input) return;
@@ -24,15 +30,22 @@ export function Dropdown() {
 
                 return;
             }
-            
-            // DO LLM THING HERE!! :D
+
             console.log("data is ", data);
             setJsonOutput(JSON.stringify(data, null, 2)); 
             
+            // DO LLM THING HERE!! :D
+            const aiResponse = await aiDropdownQuery(JSON.stringify(data));
+            console.log("AI Response:", aiResponse);
+            setLLMOutput(aiResponse);
+            
 
         } catch (error) {
-            console.error("Error fetching HTSNO:", error);
-        }
+            console.error("Error fetching or querying AI:", error);
+            setError(error instanceof Error ? error.message : "An unknown error occurred");
+          } finally {
+            setIsLoading(false);
+          }
 
     };
 
@@ -41,10 +54,10 @@ export function Dropdown() {
     };
 
     return(
-        <div className="flex items-center justify-center h-screen flex-col gap-y-20">
-            <div className="bg-white border-gray-300 border-1 h-40 align-middle justify-center flex w-2/3 flex-row items-center gap-x-15 rounded-lg">
+        <div className="flex items-center justify-center h-screen flex-col ">
+            <div className="bg-white border-gray-300 border-1 h-20 align-middle justify-center flex w-2/3 flex-row items-center gap-x-15 py-20 rounded-lg">
                 <Input
-                className="z-10 rounded-lg h-11 w-1/2 sm:w-1/2 md:w-1/2 bg-white text-[#A5BE00] file:text-base md:text-base text-base focus:border-1 border-gray-300 border-1 focus:border-ring-0 focus-visible:border-ring-0"
+                className="z-10 rounded-lg h-20 w-1/2 sm:w-1/2 md:w-1/2 bg-white text-[#A5BE00] file:text-base md:text-base text-base focus:border-1 border-gray-300 border-1 focus:border-ring-0 focus-visible:border-ring-0"
                 type="text"
                 placeholder="Enter HTSNO code..."
                 onChange={display}
@@ -60,21 +73,22 @@ export function Dropdown() {
 
             </div>
 
-            <div className="bg-[#A5BE00] border-gray-400 border-1 h-80 flex items-center justify-center w-2/3 rounded-lg">
-                    <div className="bg-white w-[90%] h-[80%] rounded-md border-gray-400 border-1 text-slate-500 text-lg">
-                        <pre>{jsonOutput}</pre>
-                        {LLMOutput}
-                    </div>
+            <div className="my-20 w-1/2 h-full justify-center align-middle items-center">
+
+            <div className="flex items-center justify-center h-full my-20">
+            <div className="bg-[#A5BE00] border-gray-400 border-1 flex items-center justify-center rounded-lg h-fit w-fit p-10">
+                <div className="bg-white rounded-md border-gray-400 border-1 text-slate-500 text-lg h-fit p-10">
+                <b>JSON OUTPUT:</b>
+                <pre>{jsonOutput}</pre>
+                <b>GEMINI RESPONSE:</b> {LLMOutput}
+                </div>
             </div>
-            
+            </div>
 
         </div>
 
-          // what we doin? we doin
-            // we're going fetch each rate's htsno number and add to the display
-            // we're going to display every country in the component
-            // once hit submit, will display the country's spec tariff
-
+          
+        </div>
     );
 
 };

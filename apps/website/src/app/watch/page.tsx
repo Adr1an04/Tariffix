@@ -25,15 +25,12 @@ export default function Watch() {
           </div>
         </div>
         </div>
-          <div className="z-10 bg-gradient-to-b from-white to-lime-100 ">
-            <div className="z-10 -mt-60">
-            
-              <Dropdown></Dropdown>
+        <div className="flex-col z-10 bg-gradient-to-b from-white to-lime-100 flex items-center justify-center h-[200vh]">
+          <div className="w-full h-full max-w-4xl">
+            <Dropdown />
+          </div>
 
-
-            </div>
-
-        <Footer/>
+          
 
           </div>
 

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 const routes: { title: string; href: string }[] = [
   { title: "Guide", href: "/guide" },
   { title: "Watch", href: "/watch" },
-  { title: "DOWNLOAD", href: "/download"}
+  { title: "DOWNLOAD", href: "https://github.com/Adr1an04/Tariffix"}
 ];
 
 const Navbar: React.FC = () => {

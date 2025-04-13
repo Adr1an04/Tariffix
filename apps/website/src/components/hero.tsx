@@ -63,7 +63,7 @@ export function Hero() {
                     </p>
                     
                     <div className="mt-8 flex space-x-8">
-                        <a href={"/download"} className="px-6 py-3 bg-[#8D6B94] text-white font-semibold rounded-md hover:bg-[#d096dc] hover:scale-102 transition-colors">
+                        <a href={"https://github.com/Adr1an04/Tariffix"} className="px-6 py-3 bg-[#8D6B94] text-white font-semibold rounded-md hover:bg-[#d096dc] hover:scale-102 transition-colors">
                             Download
                         </a>
                         <a href={"/guide"} className="px-6 py-3 bg-lime-500 text-white font-semibold rounded-md hover:bg-lime-600 transition-colors hover:scale-102">
