@@ -1,10 +1,11 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
-dotenv.config({ path: '../../.env' });
+// Load environment variables from the website's .env.local
+dotenv.config({ path: '../../apps/website/.env.local' });
 
 if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
-  throw new Error('GEMINI_API_KEY is not defined in environment variables');
+  throw new Error('NEXT_PUBLIC_GEMINI_API_KEY is not defined in environment variables');
 }
 
 const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
@@ -12,11 +13,31 @@ const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 export async function queryAI(prompt: string): Promise<string> {
   try {
     const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
-    const result = await model.generateContent("Give the HTS code for this product: Apple 2025 MacBook Air 13-inch Laptop with M4 chip: Built for Apple Intelligence, 13.6-inch Liquid Retina Display, 16GB Unified Memory, 256GB SSD Storage, 12MP Center Stage Camera, Touch ID; Sky Blue , No YAP ONLY THE CODE ");
+    
+    // Format the prompt to specifically request 4-digit HTS code
+    const formattedPrompt = `Give me ONLY the first 4 digits of the HTS code (Harmonized Tariff Schedule code) for this product: ${prompt}. Return ONLY the 4-digit number, no explanation or additional text.`;
+    
+    const result = await model.generateContent(formattedPrompt);
     const response = await result.response;
-    return response.text();
+    const text = response.text();
+    
+    // Clean up the response and ensure we get exactly 4 digits
+    const cleanedText = text.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+    const firstFourDigits = cleanedText.slice(0, 4);
+    
+    if (firstFourDigits.length !== 4) {
+      throw new Error('Invalid HTS code format - expected 4 digits');
+    }
+    
+    return firstFourDigits;
   } catch (error) {
     console.error('Error querying AI:', error);
-    return error instanceof Error ? error.message : 'Unknown error occurred';
+    if (error instanceof Error) {
+      if (error.message.includes('404')) {
+        return 'Error: Invalid model name. Please check the Gemini API documentation for available models.';
+      }
+      return `Error: ${error.message}`;
+    }
+    return 'Unknown error occurred while querying the AI';
   }
 }

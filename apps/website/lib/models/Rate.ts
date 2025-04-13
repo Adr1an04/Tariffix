@@ -4,6 +4,7 @@ const rateSchema = new mongoose.Schema({
   _id: {
     type: Types.ObjectId,
   },
+
   htsno: {
     type: String,
   },
@@ -19,6 +20,17 @@ const rateSchema = new mongoose.Schema({
   other: [{
     type: String,
   }],
+    required: true,
+  },
+  other: {
+    type: String,
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+
 });
 
 export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema); 
