@@ -11,6 +11,7 @@
     "full-build": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.2.1",
     "@types/chrome": "^0.0.255",
     "cheerio": "^1.0.0-rc.12",
     "@tarriffix/ai": "workspace:*",

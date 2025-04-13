@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
+import { getHtsCode, TariffEstimate } from '/Users/kaisprunger/tarrifix/TarrifFix/apps/extension/src/services/aiService.ts'
+import { fetchTariffRates } from '/Users/kaisprunger/tarrifix/TarrifFix/apps/extension/src/services/tariffService.ts'
 
 interface ProductData {
   title: string;
@@ -11,10 +13,27 @@ interface ProductData {
   website: string;
 }
 
+interface Rate {
+  htsno: string;
+  description: string;
+  general: string;
+  other: string;
+  estimatedCost?: string;
+}
+
 const Popup = () => {
   const [productData, setProductData] = useState<ProductData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [htsCode, setHtsCode] = useState<string | null>(null)
+  const [htsLoading, setHtsLoading] = useState(false)
+  const [rates, setRates] = useState<Rate[]>([])
+  const [ratesLoading, setRatesLoading] = useState(false)
+  const [tariffEstimate, setTariffEstimate] = useState<TariffEstimate | null>(null)
+
+  // Cache for HTS codes and rates
+  const [htsCache, setHtsCache] = useState<Record<string, string>>({})
+  const [ratesCache, setRatesCache] = useState<Record<string, Rate[]>>({})
 
   useEffect(() => {
     const fetchProductData = async () => {
@@ -24,7 +43,6 @@ const Popup = () => {
       try {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         
-        // Check if URL is from a supported website
         if (!tab?.url) {
           setError('No active tab found')
           setLoading(false)
@@ -42,7 +60,6 @@ const Popup = () => {
 
         // Send message through the background script
         const response = await chrome.runtime.sendMessage({ action: 'getProductData' });
-        console.log('Popup received response:', response);
         
         if (response?.error) {
           setError(response.error)
@@ -50,10 +67,12 @@ const Popup = () => {
           setError('No data received from the page')
         } else {
           setProductData(response.data)
+          // Start fetching HTS code immediately with manufacturer info
+          fetchHtsCode(response.data.title, response.data.price, response.data.manufacturer)
         }
       } catch (err) {
         console.error('Error in popup:', err);
-        setError(`Error: ${err.message}`)
+        setError(`Error: ${err instanceof Error ? err.message : 'Unknown error'}`)
       } finally {
         setLoading(false)
       }
@@ -61,6 +80,51 @@ const Popup = () => {
 
     fetchProductData()
   }, [])
+
+  const fetchHtsCode = async (productTitle: string, price?: string, manufacturer?: string) => {
+    // Check cache first
+    if (htsCache[productTitle]) {
+      setHtsCode(htsCache[productTitle])
+      fetchRates(htsCache[productTitle])
+      return
+    }
+
+    setHtsLoading(true)
+    try {
+      const estimate = await getHtsCode(productTitle, price, manufacturer)
+      setHtsCode(estimate.htsCode)
+      setTariffEstimate(estimate)
+      // Update cache
+      setHtsCache(prev => ({ ...prev, [productTitle]: estimate.htsCode }))
+      // Start fetching rates immediately
+      fetchRates(estimate.htsCode)
+    } catch (err) {
+      console.error('Error getting HTS code:', err)
+      setError(`Error getting HTS code: ${err instanceof Error ? err.message : 'Unknown error'}`)
+    } finally {
+      setHtsLoading(false)
+    }
+  }
+
+  const fetchRates = async (htsCode: string) => {
+    if (!productData) return;
+    
+    setRatesLoading(true);
+    try {
+      const rates = await fetchTariffRates(
+        htsCode,
+        productData.title,
+        productData.price,
+        productData.currency
+      );
+      setRates(rates);
+    } catch (err) {
+      console.error('Error fetching rates:', err);
+      setError(`Error fetching rates: ${err instanceof Error ? err.message : 'Unknown error'}`);
+    } finally {
+      setRatesLoading(false);
+    }
+  };
 
   const renderProductDetails = () => {
     if (!productData) return null
@@ -86,6 +150,20 @@ const Popup = () => {
             <span className="info-label">Website:</span>
             <span className="info-value">{productData.website}</span>
           </div>
+          <div className="info-row hts-code">
+            <span className="info-label">HTS Code:</span>
+            <span className="info-value">
+              {htsLoading ? (
+                <span className="loading-dots">Loading</span>
+              ) : htsCode || 'Not found'}
+            </span>
+          </div>
+        </div>
+
+        {/* Tariff Rates Section */}
+        <div className="tariff-rates">
+          <h4 className="rates-title">Tariff Rates</h4>
+          {renderTariffRates()}
         </div>
         
         <div className="product-url">
@@ -93,6 +171,85 @@ const Popup = () => {
         </div>
       </div>
     )
+  }
+
+  const renderTariffRates = () => {
+    if (ratesLoading) {
+      return <div className="loading">Loading rates...</div>
+    }
+
+    if (rates.length > 0) {
+      const rate = rates[0] // Use the first rate
+      return (
+        <div className="rate-item">
+          <div className="tariff-calculation">
+            <div className="calc-row">
+              <span className="emoji">🧾</span>
+              <span className="label">Retail Price:</span>
+              <span className="value">{productData?.currency}{productData?.price}</span>
+            </div>
+            <div className="calc-row">
+              <span className="emoji">💰</span>
+              <span className="label">Estimated Tariff Portion:</span>
+              <span className="value">{rate.estimatedCost}</span>
+            </div>
+            <div className="calc-row">
+              <span className="emoji">📦</span>
+              <span className="label">Base Price (pre-tariff):</span>
+              <span className="value">
+                {productData?.currency}
+                {(parseFloat(productData?.price || '0') - parseFloat(rate.estimatedCost?.replace(/[^0-9.-]+/g, '') || '0')).toFixed(2)}
+              </span>
+            </div>
+            <div className="tariff-info">
+              Based on HTS {rate.htsno} @ {rate.general} tariff rate
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    // Show AI estimate when server is not available
+    if (tariffEstimate) {
+      return (
+        <div className="rate-item ai-estimate">
+          <div className="tariff-calculation">
+            <div className="calc-row">
+              <span className="emoji">🧾</span>
+              <span className="label">Retail Price:</span>
+              <span className="value">{tariffEstimate.retailPrice}</span>
+            </div>
+            <div className="calc-row">
+              <span className="emoji">💰</span>
+              <span className="label">Estimated Tariff Portion:</span>
+              <span className="value">{tariffEstimate.tariffAmount}</span>
+            </div>
+            <div className="calc-row">
+              <span className="emoji">📦</span>
+              <span className="label">Base Price (pre-tariff):</span>
+              <span className="value">{tariffEstimate.basePrice}</span>
+            </div>
+            <div className="tariff-info">
+              Based on HTS {tariffEstimate.htsCode} @ {(parseFloat(tariffEstimate.generalRate) * 100).toFixed(0)}% tariff rate
+              {tariffEstimate.countryOfOrigin && (
+                <div className="origin-info">
+                  <span className="emoji">🌍</span> Origin: {tariffEstimate.countryOfOrigin}
+                  {tariffEstimate.countryOfOrigin === 'China' && (
+                    <span className="section-301"> (includes Section 301 tariffs)</span>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+          <div className="ai-warning">
+            <span className="ai-icon">🤖</span>
+            This is an AI-generated estimate. For official rates, ensure the server is running.
+          </div>
+        </div>
+      )
+    }
+
+    return <div>No tariff rates available</div>
   }
 
   return (
@@ -115,7 +272,7 @@ const Popup = () => {
           textAlign: 'center', 
           padding: '20px'
         }}>
-          <p>Loading page data...</p>
+          <div className="loading-dots">Loading page data</div>
         </div>
       ) : error ? (
         <div style={{ 
@@ -176,6 +333,48 @@ const Popup = () => {
           text-align: right;
           word-break: break-word;
         }
+        .hts-code .info-value {
+          font-family: monospace;
+          font-size: 1.1em;
+          font-weight: bold;
+        }
+        .tariff-rates {
+          background-color: #f8f8f8;
+          padding: 16px;
+          border-radius: 8px;
+        }
+        .rates-title {
+          margin: 0 0 12px 0;
+          color: #0F1111;
+          font-size: 16px;
+        }
+        .rates-list {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+        }
+        .rate-item {
+          background-color: white;
+          padding: 12px;
+          border-radius: 4px;
+          border: 1px solid #eee;
+        }
+        .rate-header {
+          font-family: monospace;
+          font-weight: bold;
+          margin-bottom: 8px;
+        }
+        .rate-description {
+          color: #555;
+          font-size: 0.9em;
+          margin-bottom: 8px;
+        }
+        .rate-details {
+          display: flex;
+          flex-direction: column;
+          gap: 4px;
+          font-size: 0.9em;
+        }
         .product-url {
           text-align: center;
           margin-top: 16px;
@@ -193,12 +392,131 @@ const Popup = () => {
           background-color: #007185;
           text-decoration: none;
         }
+        .loading-dots {
+          display: inline-block;
+          position: relative;
+          width: 80px;
+          height: 20px;
+        }
+        .loading-dots:after {
+          content: " .";
+          animation: dots 1s steps(5, end) infinite;
+        }
+        @keyframes dots {
+          0%, 20% {
+            color: rgba(0,0,0,0);
+            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+          }
+          40% {
+            color: #666;
+            text-shadow: .25em 0 0 rgba(0,0,0,0), .5em 0 0 rgba(0,0,0,0);
+          }
+          60% {
+            text-shadow: .25em 0 0 #666, .5em 0 0 rgba(0,0,0,0);
+          }
+          80%, 100% {
+            text-shadow: .25em 0 0 #666, .5em 0 0 #666;
+          }
+        }
+        .ai-estimate {
+          border-left: 4px solid #2196f3;
+        }
+        
+        .ai-warning {
+          margin-top: 8px;
+          padding: 8px;
+          background-color: #e3f2fd;
+          border: 1px solid #bbdefb;
+          border-radius: 4px;
+          color: #0d47a1;
+          font-size: 0.85em;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+        
+        .ai-icon {
+          font-size: 1.2em;
+        }
+        
+        .estimated-cost {
+          margin-top: 8px;
+          padding: 8px;
+          background-color: #f8f9fa;
+          border: 1px solid #e9ecef;
+          border-radius: 4px;
+          font-weight: bold;
+          color: #28a745;
+        }
+        
+        .cost-explanation {
+          margin-top: 4px;
+          font-size: 0.85em;
+          color: #666;
+          font-weight: normal;
+        }
+
+        .tariff-calculation {
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          padding: 12px;
+          background-color: white;
+          border-radius: 8px;
+        }
+
+        .calc-row {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          font-size: 1.1em;
+        }
+
+        .emoji {
+          font-size: 1.2em;
+          width: 24px;
+          text-align: center;
+        }
+
+        .label {
+          flex: 1;
+          color: #555;
+        }
+
+        .value {
+          font-family: monospace;
+          font-weight: bold;
+          color: #2196f3;
+        }
+
+        .tariff-info {
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px solid #eee;
+          color: #666;
+          font-size: 0.9em;
+          text-align: center;
+        }
+
+        .origin-info {
+          margin-top: 8px;
+          font-size: 0.9em;
+          color: #555;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          justify-content: center;
+        }
+
+        .section-301 {
+          color: #d32f2f;
+          font-weight: 500;
+        }
       `}</style>
     </div>
   )
 }
 
-const root = document.getElementById('root')
-if (root) {
-  createRoot(root).render(<Popup />)
-}
+const root = document.createElement('div')
+document.body.appendChild(root)
+createRoot(root).render(<Popup />)
