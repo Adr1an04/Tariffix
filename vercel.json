@@ -1,0 +1,7 @@
+{
+  "version": 2,
+  "buildCommand": "cd apps/website && pnpm install && pnpm run build",
+  "outputDirectory": "apps/website/.next",
+  "installCommand": "pnpm install",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./apps/website/"
+}

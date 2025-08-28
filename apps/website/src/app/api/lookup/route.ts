@@ -1,17 +1,9 @@
 import { NextResponse } from "next/server";
-import { MongoClient } from "mongodb";
-import { connectToDatabase } from '/Users/kaisprunger/tarrifix/TarrifFix/lib/mongodb.js';
-
-const uri = process.env.MONGODB_URI!;
-const client = new MongoClient(uri);
-const dbName = "tariff"; 
+import { connectToDatabase } from '../../../../lib/mongodb';
+import { Rate } from '../../../../lib/models/Rate';
 
 export async function GET(request: Request) {
   try {
-
-    await connectToDatabase();
-    
-
     const { searchParams } = new URL(request.url);
     const htsno = searchParams.get("htsno");
 
@@ -19,11 +11,8 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Missing htsno parameter" }, { status: 400 });
     }
 
-    await client.connect();
-    const db = client.db(dbName);
-    const collection = db.collection("rates"); 
-
-    const result = await collection.findOne({ htsno });
+    await connectToDatabase();
+    const result = await Rate.findOne({ htsno });
 
     if (!result) {
       return NextResponse.json({ error: "HTSNO not found" }, { status: 404 });
@@ -33,7 +22,5 @@ export async function GET(request: Request) {
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  } finally {
-    await client.close();
   }
 }

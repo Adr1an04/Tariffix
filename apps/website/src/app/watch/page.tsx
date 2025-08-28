@@ -1,42 +1,81 @@
 import { Dropdown } from "@/components/dropdown";
 import { Navbar } from "@/components/navbar";
 import Image from "next/image";
-import Footer from '@/components/foot';
 
 export default function Watch() {
   return (
     <div className="flex flex-col min-h-screen bg-white">
-      <div className="z-10">
-        <Navbar/>
-      </div>
-        <div className="flex flex-col">
-        <div className="h-[100vh] w-full flex items-center justify-center">
-            <Image
-              src="/watchbackground.png" 
-              alt="Background Image"
-              layout="fill" 
-              objectFit="cover" 
-              className="opacity-90"
-            />
-          <div className="flex flex-col items-center w-2/3 justify-center text-center -mt-60 z-10">
-          <div className="text-7xl font-bold text-white">Visualize the Effects</div>
-          <div className="mt-4 text-lg text-white font-bold text-center">
-            Easily look up tariffs and receive expert information with just an HTS code with our MongoDB Atlas database and LLM — clear, fast, and reliable trade insights at your fingertips.
+      <Navbar />
+      
+      {/* Hero Section */}
+      <section className="relative h-[70vh] w-full flex items-center justify-center overflow-hidden">
+        <Image
+          src="/watchbackground.png" 
+          alt="Background Image"
+          fill
+          className="object-cover opacity-90"
+          priority
+        />
+        <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-white mb-6">
+            Visualize the Effects
+          </h1>
+          <p className="text-lg md:text-xl text-white font-medium max-w-3xl mx-auto">
+            Look up tariffs and get expert information with just an HTS code. Our database and AI provide clear, fast, and reliable trade insights at your fingertips.
+          </p>
+        </div>
+      </section>
+
+      {/* Tools Section */}
+      <section className="bg-white py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-black mb-4">Try the HTS Code Lookup</h2>
+            <p className="text-neutral-700 max-w-2xl mx-auto">
+              Enter any HTS code to see detailed tariff information including duty rates, descriptions, and AI-generated summaries.
+            </p>
           </div>
-        </div>
-        </div>
-        <div className="flex-col z-10 bg-gradient-to-b from-white to-lime-100 flex items-center justify-center h-[200vh]">
-          <div className="w-full h-full max-w-4xl">
+          
+          <div className="max-w-4xl mx-auto">
             <Dropdown />
           </div>
-
-          
-
-          </div>
-
         </div>
+      </section>
 
+      {/* Features Section */}
+      <section className="bg-neutral-50 py-16">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div>
+              <h3 className="text-2xl font-bold text-black mb-4">How It Works</h3>
+              <div className="space-y-4">
+                <div className="flex gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#A5BE00] flex items-center justify-center text-white text-sm font-bold">1</div>
+                  <p className="text-neutral-700">Enter an HTS code in the search box above</p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#A5BE00] flex items-center justify-center text-white text-sm font-bold">2</div>
+                  <p className="text-neutral-700">Our system fetches the latest tariff data from our database</p>
+                </div>
+                <div className="flex gap-3">
+                  <div className="w-6 h-6 rounded-full bg-[#A5BE00] flex items-center justify-center text-white text-sm font-bold">3</div>
+                  <p className="text-neutral-700">AI analyzes and provides a clear, professional summary</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-2xl overflow-hidden border border-[rgba(211,211,211,1)]">
+              <Image
+                src="/watchhero.png"
+                alt="Tariff lookup demonstration"
+                width={600}
+                height={400}
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
-
   );
 }
+

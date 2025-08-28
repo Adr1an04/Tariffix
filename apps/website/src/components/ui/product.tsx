@@ -22,7 +22,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { ObjectId } from "mongoose";
 
 export function Product() {
   // State to store fetched products and selected value

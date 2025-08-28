@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { GEMINI_API_KEY } from '/Users/kaisprunger/tarrifix/TarrifFix/apps/extension/src/config.ts';
+import { GEMINI_API_KEY } from '../config';
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 

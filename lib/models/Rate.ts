@@ -21,4 +21,4 @@ const rateSchema = new mongoose.Schema({
   }],
 });
 
-export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema); 
+export const Rate = mongoose.models.Rate || mongoose.model('Rate', rateSchema);

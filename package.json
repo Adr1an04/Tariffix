@@ -4,10 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev:website": "cd apps/website && npm run dev",
-    "dev:extension": "cd apps/extension && npm run dev",
-    "build:website": "cd apps/website && npm run build",
-    "build:extension": "cd apps/extension && npm run build"
+    "dev:website": "cd apps/website && pnpm run dev",
+    "dev:extension": "cd apps/extension && pnpm run dev",
+    "build:website": "cd apps/website && pnpm run build",
+    "build:extension": "cd apps/extension && pnpm run build",
+    "dev": "pnpm run dev:website",
+    "build": "pnpm run build:website",
+    "start": "cd apps/website && pnpm start"
   },
   "test": "echo \"Error: no test specified\" && exit 1",
   "keywords": [],

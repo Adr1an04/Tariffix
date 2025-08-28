@@ -1,8 +1,8 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import dotenv from 'dotenv';
 
-// Load environment variables from the website's .env.local
-dotenv.config({ path: '/Users/kaisprunger/tarrifix/TarrifFix/apps/website/.env' });
+// Load environment variables from the root .env file
+dotenv.config({ path: '../../.env' });
 const gemini = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
 
 if (!gemini) {

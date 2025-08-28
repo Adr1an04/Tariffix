@@ -3,16 +3,15 @@ import Link from "next/link";
 import React, { useState } from "react";
 import Image from "next/image";
 import { XMarkIcon, Bars3Icon } from "@heroicons/react/24/solid";
-import { Button } from "@/components/ui/button";
 
 const routes: { title: string; href: string }[] = [
   { title: "Guide", href: "/guide" },
   { title: "Watch", href: "/watch" },
-  { title: "DOWNLOAD", href: "https://github.com/Adr1an04/Tariffix"}
+  { title: "DOWNLOAD", href: "/download" }
 ];
 
-const Navbar: React.FC = () => {
-  const [menuOpen, setMenuOpen] = useState(false);
+const Navbar = (): JSX.Element => {
+  const [menuOpen, setMenuOpen] = useState<boolean>(false);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -55,7 +54,7 @@ const Navbar: React.FC = () => {
   );
 };
 
-const MobileMenu: React.FC<{ toggleMenu: () => void }> = ({ toggleMenu }) => {
+const MobileMenu = ({ toggleMenu }: { toggleMenu: () => void }): JSX.Element => {
   return (
     <div className="fixed inset-0 flex flex-col z-40 bg-[#A5BE00] h-fit">
       <div className="flex w-full grow flex-col gap-1 px-4 pb-2 py-12">

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import { getHtsCode, TariffEstimate } from '/Users/kaisprunger/tarrifix/TarrifFix/apps/extension/src/services/aiService.ts'
-import { fetchTariffRates } from '/Users/kaisprunger/tarrifix/TarrifFix/apps/extension/src/services/tariffService.ts'
+import { getHtsCode, TariffEstimate } from '../services/aiService'
+import { fetchTariffRates } from '../services/tariffService'
 
 interface ProductData {
   title: string;

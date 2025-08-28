@@ -1,7 +1,6 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
-import Image from "next/image";
 import { aiDropdownQuery } from "@tarriffix/ai/aiDropDownQuery";
 
 export function Dropdown() {
@@ -11,8 +10,7 @@ export function Dropdown() {
     
     const [jsonOutput, setJsonOutput] = useState<string>("");
 
-    const [htsCode, setHtsCode] = useState<string>("");
-    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
 
@@ -20,6 +18,8 @@ export function Dropdown() {
         if (!input) return;
 
         try {
+            setIsLoading(true);
+            setError(null);
             const response = await fetch(`/api/lookup?htsno=${input}`)
             const data = await response.json();
 
@@ -74,6 +74,12 @@ export function Dropdown() {
             </div>
 
             <div className="my-20 w-1/2 h-full justify-center align-middle items-center">
+            {isLoading && (
+              <div className="mb-6 text-neutral-600 text-center">Loading…</div>
+            )}
+            {error && (
+              <div className="mb-6 text-red-600 text-center">{error}</div>
+            )}
 
             <div className="flex items-center justify-center h-full my-20">
             <div className="bg-[#A5BE00] border-gray-400 border-1 flex items-center justify-center rounded-lg h-fit w-fit p-10">
@@ -86,8 +92,7 @@ export function Dropdown() {
             </div>
 
         </div>
-
-          
+        
         </div>
     );
 

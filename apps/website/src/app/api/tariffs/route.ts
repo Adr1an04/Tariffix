@@ -1,5 +1,5 @@
-import { connectToDatabase } from '/Users/kaisprunger/tarrifix/TarrifFix/lib/mongodb.js';
-import { Rate } from '/Users/kaisprunger/tarrifix/TarrifFix/lib/models/Rate.js';
+import { connectToDatabase } from '../../../../lib/mongodb';
+import { Rate } from '../../../../lib/models/Rate';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
