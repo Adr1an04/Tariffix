@@ -5,7 +5,7 @@ export const dynamic = 'force-dynamic';
 import { useEffect, useState } from "react";
 import { Hero } from "@/components/hero";
 import { Navbar } from "@/components/navbar";
-import { queryAI } from "@tarriffix/ai";
+import { queryAI } from "../../../lib/aiQuery";
 
 export default function Home() {
   // type safety
@@ -78,6 +78,20 @@ export default function Home() {
       <Hero />
 
       <div className="p-4">
+        {/* AI Demo Notice */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+          <div className="flex items-start">
+            <div className="text-yellow-600 mr-3">🤖</div>
+            <div>
+              <h3 className="text-sm font-semibold text-yellow-800 mb-1">AI Features in Demo Mode</h3>
+              <p className="text-xs text-yellow-700">
+                AI suggestions are disabled on this public demo to prevent API costs. 
+                <a href="https://github.com/Adr1an04/Tariffix" className="underline hover:text-yellow-900"> Clone the repository</a> to enable full AI functionality with your own Gemini API key.
+              </p>
+            </div>
+          </div>
+        </div>
+        
         <h2 className="text-xl font-bold mb-2 text-black">Tariff Rates</h2>
         {isLoading ? (
           <p>Loading...</p>

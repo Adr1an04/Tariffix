@@ -1,7 +1,7 @@
 "use client";
 import React, { useState } from 'react';
 import { Input } from "@/components/ui/input";
-import { aiDropdownQuery } from "@tarriffix/ai/aiDropDownQuery";
+import { aiDropdownQuery } from "../../lib/aiDropdownQuery";
 
 export function Dropdown() {
     const [input, setInput] = useState<string>(""); 

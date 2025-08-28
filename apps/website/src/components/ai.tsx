@@ -1,4 +1,4 @@
-import { queryAI } from '@tarriffix/ai';
+import { queryAI } from "../../lib/aiQuery";
 
 // Example usage wrapped in an async IIFE
 (async () => {

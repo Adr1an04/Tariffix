@@ -37,6 +37,20 @@ export default function Watch() {
           </div>
           
           <div className="max-w-4xl mx-auto">
+            {/* AI Demo Notice */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+              <div className="flex items-start">
+                <div className="text-blue-600 mr-3">🤖</div>
+                <div>
+                  <h3 className="text-sm font-semibold text-blue-800 mb-1">AI Summary Feature Demo</h3>
+                  <p className="text-xs text-blue-700">
+                    AI tariff summaries are disabled on this public demo to prevent API costs. 
+                    <a href="https://github.com/Adr1an04/Tariffix" className="underline hover:text-blue-900"> Clone the repository</a> to enable full AI functionality with your own Gemini API key.
+                  </p>
+                </div>
+              </div>
+            </div>
+            
             <Dropdown />
           </div>
         </div>
