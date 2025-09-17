@@ -243,7 +243,7 @@ const Popup = () => {
           </div>
           <div className="ai-warning">
             <span className="ai-icon">🤖</span>
-            This is an AI-generated estimate. For official rates, ensure the server is running.
+            This is an AI-generated estimate, be advised that the rates may not be accurate.
           </div>
         </div>
       )
