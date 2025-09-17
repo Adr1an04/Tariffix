@@ -54,17 +54,56 @@ async function findManufacturerOrigin(manufacturer: string): Promise<string | nu
     - "United States"
     - "Unknown"`;
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const country = response.text().trim();
+    const country = await retryWithBackoff(async () => {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      return response.text().trim();
+    }, 2, 1000); // 2 retries with 1 second base delay
     
     return country === "Unknown" ? null : country;
   } catch (error) {
-    console.error('Error finding manufacturer origin:', error);
+    console.error('Error finding manufacturer origin after retries:', error);
     return null;
   }
 }
+
+// Retry utility with exponential backoff
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  maxRetries: number = 3,
+  baseDelay: number = 1000
+): Promise<T> => {
+  let lastError: Error;
+  
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error) {
+      lastError = error as Error;
+      
+      // Check if it's a retryable error
+      const isRetryable = error instanceof Error && (
+        error.message.includes('503') ||
+        error.message.includes('overloaded') ||
+        error.message.includes('quota') ||
+        error.message.includes('rate limit') ||
+        error.message.includes('timeout')
+      );
+      
+      if (!isRetryable || attempt === maxRetries) {
+        throw error;
+      }
+      
+      // Calculate delay with exponential backoff and jitter
+      const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+      console.log(`Attempt ${attempt + 1} failed, retrying in ${Math.round(delay)}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+    }
+  }
+  
+  throw lastError!;
+};
 
 export const getHtsCode = async (productTitle: string, price?: string, manufacturer?: string): Promise<TariffEstimate> => {
   try {
@@ -111,30 +150,81 @@ Example response for luggage priced at $100 from China:
 
 Return ONLY the JSON object, no additional text, no markdown formatting, no code blocks.`
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
-    const result = await model.generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    
-    // Clean up the response text
-    const cleanedText = text
-      .replace(/```json/g, '')
-      .replace(/```/g, '')
-      .trim();
-    
-    // Parse the JSON response
-    const estimate = JSON.parse(cleanedText) as TariffEstimate;
-    
-    // Validate the response
-    if (!estimate.htsCode || !estimate.description || !estimate.generalRate || 
-        !estimate.otherRate || !estimate.retailPrice || !estimate.tariffAmount || 
-        !estimate.basePrice) {
-      throw new Error('Invalid response format from AI');
-    }
+    // Use retry mechanism for the AI call
+    const estimate = await retryWithBackoff(async () => {
+      const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash-lite' });
+      const result = await model.generateContent(prompt);
+      const response = await result.response;
+      const text = response.text();
+      
+      console.log('Raw AI response:', text);
+      
+      // Clean up the response text - try multiple approaches
+      let cleanedText = text
+        .replace(/```json/g, '')
+        .replace(/```/g, '')
+        .trim();
+      
+      // Try to extract JSON from the response
+      const jsonMatch = cleanedText.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        cleanedText = jsonMatch[0];
+      }
+      
+      console.log('Cleaned AI response:', cleanedText);
+      
+      // Try to parse the JSON response
+      let parsedEstimate: TariffEstimate;
+      try {
+        parsedEstimate = JSON.parse(cleanedText) as TariffEstimate;
+      } catch (parseError) {
+        console.error('JSON parse error:', parseError);
+        console.error('Failed to parse text:', cleanedText);
+        
+        // Try to create a fallback response if parsing fails
+        const fallbackEstimate: TariffEstimate = {
+          htsCode: "9999",
+          description: "General merchandise - unable to classify",
+          generalRate: "0.10",
+          otherRate: "0.05",
+          retailPrice: price ? `$${price}` : "$0.00",
+          tariffAmount: price ? `$${(parseFloat(price) * 0.10).toFixed(2)}` : "$0.00",
+          basePrice: price ? `$${(parseFloat(price) * 0.90).toFixed(2)}` : "$0.00",
+          countryOfOrigin: originCountry || undefined
+        };
+        
+        console.warn('Using fallback estimate due to AI parsing error');
+        return fallbackEstimate;
+      }
+      
+      // Validate the response
+      if (!parsedEstimate.htsCode || !parsedEstimate.description || !parsedEstimate.generalRate || 
+          !parsedEstimate.otherRate || !parsedEstimate.retailPrice || !parsedEstimate.tariffAmount || 
+          !parsedEstimate.basePrice) {
+        console.error('Missing required fields in AI response:', parsedEstimate);
+        throw new Error('Invalid response format from AI - missing required fields');
+      }
+      
+      return parsedEstimate;
+    }, 3, 2000); // 3 retries with 2 second base delay
     
     return estimate;
   } catch (error) {
-    console.error('Error getting HTS code:', error);
-    throw error;
+    console.error('Error getting HTS code after all retries:', error);
+    
+    // If all retries failed, return a fallback estimate
+    const fallbackEstimate: TariffEstimate = {
+      htsCode: "9999",
+      description: "General merchandise - AI service unavailable",
+      generalRate: "0.10",
+      otherRate: "0.05",
+      retailPrice: price ? `$${price}` : "$0.00",
+      tariffAmount: price ? `$${(parseFloat(price) * 0.10).toFixed(2)}` : "$0.00",
+      basePrice: price ? `$${(parseFloat(price) * 0.90).toFixed(2)}` : "$0.00",
+      countryOfOrigin: undefined
+    };
+    
+    console.warn('Using fallback estimate due to AI service failure');
+    return fallbackEstimate;
   }
 }; 

@@ -109,7 +109,22 @@ const Popup = () => {
       fetchRates(estimate.htsCode)
     } catch (err) {
       console.error('Error getting HTS code:', err)
-      setError(`Error getting HTS code: ${err instanceof Error ? err.message : 'Unknown error'}`)
+      
+      // Provide user-friendly error messages
+      let errorMessage = 'Unknown error';
+      if (err instanceof Error) {
+        if (err.message.includes('503') || err.message.includes('overloaded')) {
+          errorMessage = 'AI service is temporarily overloaded. Please try again in a few moments.';
+        } else if (err.message.includes('quota') || err.message.includes('rate limit')) {
+          errorMessage = 'AI service rate limit exceeded. Please try again later.';
+        } else if (err.message.includes('timeout')) {
+          errorMessage = 'Request timed out. Please check your connection and try again.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+      
+      setError(`Error getting HTS code: ${errorMessage}`)
     } finally {
       setHtsLoading(false)
     }
