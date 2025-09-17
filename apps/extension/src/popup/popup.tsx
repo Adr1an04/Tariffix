@@ -94,6 +94,15 @@ const Popup = () => {
       const estimate = await getHtsCode(productTitle, price, manufacturer)
       setHtsCode(estimate.htsCode)
       setTariffEstimate(estimate)
+      
+      // Update product data with AI-determined country of origin if scraped data is empty
+      if (estimate.countryOfOrigin && (!productData?.countryOfOrigin || productData.countryOfOrigin.trim() === '')) {
+        setProductData(prev => prev ? {
+          ...prev,
+          countryOfOrigin: estimate.countryOfOrigin!
+        } : null)
+      }
+      
       // Update cache
       setHtsCache(prev => ({ ...prev, [productTitle]: estimate.htsCode }))
       // Start fetching rates immediately
